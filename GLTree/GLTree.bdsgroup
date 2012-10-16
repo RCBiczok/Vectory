@@ -1,0 +1,22 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<BorlandProject>
+  <PersonalityInfo>
+    <Option>
+      <Option Name="Personality">Default.Personality</Option>
+      <Option Name="ProjectType"></Option>
+      <Option Name="Version">1.0</Option>
+      <Option Name="GUID">{0DE3DEAC-0555-45B5-8019-A917DD30A092}</Option>
+    </Option>
+  </PersonalityInfo>
+  <Default.Personality>
+    
+    <Projects>
+      <Projects Name="GLTree.bpl">GLTree.bdsproj</Projects>
+      <Projects Name="GLScene2006.bpl">..\..\..\programme\borland\glscenenew\delphi2006\GLScene2006.bdsproj</Projects>
+      <Projects Name="Targets">GLTree.bpl GLScene2006.bpl</Projects>
+    </Projects>
+    <Dependencies/>
+  </Default.Personality>
+  <StarTeamAssociation></StarTeamAssociation>
+  <StarTeamNonRelativeFiles></StarTeamNonRelativeFiles>
+</BorlandProject>

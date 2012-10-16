@@ -1,0 +1,32 @@
+unit MyParser;
+
+interface
+
+type
+  TVariable = record
+    Name: string;
+    Value: single;
+  end;
+
+  TVarArray = Array of TVariable;
+
+  TCalculation = record
+    Operand1: single;
+    Operand1: single;
+    Operator: string;
+  end;
+
+  TCalculationArray = Array of
+
+function DetermineValue(S: string): single;
+function TranslateString(S: string):
+
+
+var
+  VarArray: TVarArray;
+
+implementation
+
+
+
+end.

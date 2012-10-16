@@ -1,0 +1,121 @@
+unit OrtsLinie;
+
+interface
+
+uses
+  MathParser, GLObjects, Primitives, SysUtils, GLTreeView, Graphics, GLColor;
+
+type
+  TRange = record
+    UpperBorder,
+    BottomBorder,
+    Step: single;
+  end;
+
+procedure ErstelleOrtsLinie(Name: string; Color: TColorVector; Punkt: TPunkt; Variable: PVariable; RangeTop, RangeBottom: single;
+                            Accuracy: integer; Spline: Boolean; RegisterAction: Boolean = true);
+procedure ActualizeOrtsLinie(OrtsLinie: TOrtsLinie);
+
+implementation
+
+uses
+  Main;
+
+function FindRange(Variable: TVariable; Up, Bottom: single; S: string): TRange;
+var
+  VUp, VBottom, Value: single;
+begin
+  // search for upper border
+  // search for bottom border
+  // calculate step
+end;
+
+procedure ErstelleOrtsLinie(Name: string; Color: TColorVector; Punkt: TPunkt; Variable: PVariable; RangeTop, RangeBottom: single;
+                            Accuracy: integer; Spline: Boolean; RegisterAction: Boolean = true);
+var
+  Step, OldValue: single;
+  i, Number: integer;
+  OrtsLinie: TOrtsLinie;
+  Node: TGLNode;
+begin
+  // OrtsLinie erstellen und vorbereiten
+  OrtsLinie:= TOrtsLinie(Form1.OrtsLinien.AddNewChild(TOrtsLinie));
+  OrtsLinie.LineWidth:= 2;
+  OrtsLinie.NodesAspect:= lnaInvisible;
+  OrtsLinie.LineColor.Initialize(Color);
+  If Spline then
+    OrtsLinie.SplineMode:= lsmCubicSpline;
+  OrtsLinie.ObjectName:=Name;
+
+  OrtsLinie.Punkt:= Punkt.ObjectName;
+  OrtsLinie.Variable:= Variable;
+  OrtsLinie.Accuracy:= Accuracy;
+  OrtsLinie.RangeTop:= RangeTop;
+  OrtsLinie.RangeBottom:= RangeBottom;
+  OrtsLinie.CreationMode:= 'Ortslinie';
+
+  // create a tree node
+  Node:= GetObjNode(GetObjName(Punkt), Form1.TreeView1);
+  Node:= TGLNode(Form1.TreeView1.Items.AddChild(Node, Name));
+  Node.LinkedObject:= OrtsLinie;
+  Node.ImageIndex:= 7;
+  Node.Selected:= True;
+
+  Step:= (RangeTop - RangeBottom)/Accuracy;
+  // remember the old value
+  OldValue:= Variable.Value;
+
+  for i:=0 to Accuracy do begin
+    Variable.Value:= RangeBottom + i*Step;
+    Form1.NotifyVarChange(Variable^);
+    If Punkt.Visible then begin
+      OrtsLinie.AddNode(Punkt.Position);
+    end else begin
+
+    end;
+  end;
+
+  Variable.Value:= OldValue;
+  Form1.NotifyVarChange(Variable^);
+
+  AddObjParent(OrtsLinie, Punkt.ObjectName);
+  AddObjChild(Punkt, OrtsLinie.ObjectName);
+
+  if RegisterAction then begin
+    Form1.RegisterActions(OrtsLinie, 'Create');
+  end;
+end;
+
+procedure ActualizeOrtsLinie(OrtsLinie: TOrtsLinie);
+var
+  ParentPunkt: TPunkt;
+  OldValue, Step: single;
+  i: integer;
+begin
+  ParentPunkt:= FindPunkt(OrtsLinie.Punkt);
+
+  // To prevent endless loop
+  DeleteObjChild(ParentPunkt, OrtsLinie.ObjectName);
+
+  With OrtsLinie do begin
+
+    Step:= (RangeTop - RangeBottom)/Accuracy;
+    // remember the old value
+    OldValue:= Variable.Value;
+
+    for i:=0 to Accuracy do begin
+      Variable.Value:= RangeBottom + i*Step;
+      Form1.NotifyVarChange(Variable^);
+      If ParentPunkt.Visible then
+        OrtsLinie.Nodes[i].AsAffineVector:=ParentPunkt.Position.AsAffineVector;
+  end;
+
+  Variable.Value:= OldValue;
+  Form1.NotifyVarChange(Variable^);
+
+  AddObjChild(ParentPunkt, OrtsLinie.ObjectName);
+
+  end;
+end;
+
+end.

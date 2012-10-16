@@ -1,0 +1,186 @@
+a
+1
+Begin
+Punkt
+P1
+Position
+a
+2
+3
+CreationMode
+
+Farbe
+12583088
+Child1
+s1 (P2, P1)
+Child2
+g1 (P1, P3)
+Child3
+E1 (P1, P3, P2)
+End
+Begin
+Punkt
+P2
+Position
+3
+2
+1
+CreationMode
+
+Farbe
+1089632
+Child1
+s1 (P2, P1)
+Child2
+s2 (P3, P2)
+Child3
+E1 (P1, P3, P2)
+Child4
+E2 (n(P3;E1 (P1, P3, P2)), P2)
+End
+Begin
+Punkt
+P3
+Position
+1
+1
+1
+CreationMode
+
+Farbe
+1085600
+Child1
+s2 (P3, P2)
+Child2
+g1 (P1, P3)
+Child3
+E1 (P1, P3, P2)
+Child4
+n(P3;E1 (P1, P3, P2))
+End
+Begin
+Strecke
+s1 (P2, P1)
+Punkt1
+3
+2
+1
+Punkt2
+1
+2
+3
+CreationMode
+Sdurch2P
+Farbe
+5205764
+Parent1
+P2
+Parent2
+P1
+End
+Begin
+Strecke
+s2 (P3, P2)
+Punkt1
+1
+1
+1
+Punkt2
+3
+2
+1
+CreationMode
+Sdurch2P
+Farbe
+12793163
+Parent1
+P3
+Parent2
+P2
+End
+Begin
+Gerade
+g1 (P1, P3)
+Aufpunkt
+1
+1
+1
+Richtung
+0
+1
+2
+CreationMode
+Gdurch2P
+Farbe
+11010930
+Parent1
+P3
+Parent2
+P1
+End
+Begin
+Gerade
+n(P3;E1 (P1, P3, P2))
+Aufpunkt
+1
+1
+1
+Richtung
+2
+-4
+2
+CreationMode
+Normale
+Farbe
+508547
+Parent1
+P3
+Parent2
+E1 (P1, P3, P2)
+Child1
+E2 (n(P3;E1 (P1, P3, P2)), P2)
+End
+Begin
+Ebene
+E1 (P1, P3, P2)
+Aufpunkt
+0
+0
+0
+Normale
+2
+-4
+2
+CreationMode
+Edurch3P
+Farbe
+10553107
+Parent1
+P3
+Parent2
+P2
+Parent3
+P1
+Child1
+n(P3;E1 (P1, P3, P2))
+End
+Begin
+Ebene
+E2 (n(P3;E1 (P1, P3, P2)), P2)
+Aufpunkt
+-1/5
+2/5
+1
+Normale
+-2
+4
+10
+CreationMode
+EdurchPG
+Farbe
+10189568
+Parent1
+P2
+Parent2
+n(P3;E1 (P1, P3, P2))
+End

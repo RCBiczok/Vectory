@@ -1,0 +1,17 @@
+Gerade loeschen mit rechtsklickmenue geht nicht (nur mit DEL)
+Ebene --> Spurgeraden einzeichnen --> ABSTURZ [(1/6/2) (5/1/3) (3/2/1)]
+what the fuck Massstab unten nochmal???
+Punkt und Ebene Markieren --> Normale zeichnen (oben) --> Gerade = X3-achse !!!???
+knoepfe rechts von "Normale zeichnen" ?
+Mausempfindlichkeit geht gar nicht (bleibt so wie ist) i guess it changes in Windows, but remains in the ANAGEO
+bei doppelklick auf eine Kugel oeffnen sich EBENE-Eigenschaften
+(wenn ich EBENE-eigenschaften veraendere, dann bewegt sie sich, aber wenn ich sie nochmal oeffne, dann zeigt er die alten wieder und wenn ich dann ok druecke, dann wird sie zurueckgesetzt)
+
+wenn die Maus kein Rad hat? +/- muesste sein
+ebene aus 2 geraden?
+kugel + ebene schneiden = keine schnittmenge vorhanden, obwohl ein kreis entstehen sollte
+loeschen der objekte mit damit verbundenen --> ACCESS VIOLATION
+oeffnen, NEU !
+
+
+

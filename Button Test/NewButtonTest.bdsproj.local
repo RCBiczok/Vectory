@@ -1,0 +1,8 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<BorlandProject>
+	<Transactions>
+    <Transaction>2007.06.23 15:18:04.796.pas,C:\Dokumente und Einstellungen\Elschad\Eigene Dateien\Borland Studio Projects\Unit3.pas=C:\Test\plane\Button Test\NewTest.pas</Transaction>
+    <Transaction>2007.06.23 15:18:04.796.dfm,C:\Dokumente und Einstellungen\Elschad\Eigene Dateien\Borland Studio Projects\Unit3.dfm=C:\Test\plane\Button Test\NewTest.dfm</Transaction>
+    <Transaction>2007.06.23 15:18:10.562.bdsproj,C:\Dokumente und Einstellungen\Elschad\Eigene Dateien\Borland Studio Projects\Project3.bdsproj=C:\Test\plane\Button Test\NewButtonTest.bdsproj</Transaction>
+  </Transactions>
+</BorlandProject>

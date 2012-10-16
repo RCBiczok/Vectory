@@ -1,0 +1,6 @@
+1. BEWEGAJU b --> fehlermeldung i tak dalee (pischlos' perestartovat')
+4. kogda parametry meniaesh, indgoda govorit "parameter named A already exists" podviga esho - kogda nibud' zavis (dazhe speichern ne smog)
+5. sdelaj na4alnij Wert dlia parametrov  "1" a ne "0", a to EBENE s a,b,c ne polu4aetsia (Null-Vektor)
+6. nu ni4ego zh ne sdelal! prosto v Eigenschaften der Ebene pomanial x1=1 na x1=a  
+
+

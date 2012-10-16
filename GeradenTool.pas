@@ -1,0 +1,251 @@
+unit GeradenTool;
+
+interface
+
+uses
+  Windows, Messages, SysUtils, Classes, Graphics, Controls, Forms,
+  Dialogs, StdCtrls, ExtCtrls, AppEvnts, Primitives, Verlauf;
+
+type
+  TForm3 = class(TForm)
+    Button1: TButton;
+    RadioButton1: TRadioButton;
+    RadioButton2: TRadioButton;
+    Panel1: TPanel;
+    Label1: TLabel;
+    Label2: TLabel;
+    Label3: TLabel;
+    Label4: TLabel;
+    Label5: TLabel;
+    Label6: TLabel;
+    Edit1: TEdit;
+    Edit2: TEdit;
+    Edit3: TEdit;
+    Edit4: TEdit;
+    Edit5: TEdit;
+    Edit6: TEdit;
+    Panel2: TPanel;
+    Label7: TLabel;
+    Label8: TLabel;
+    Label9: TLabel;
+    Label10: TLabel;
+    Label11: TLabel;
+    Label12: TLabel;
+    Edit7: TEdit;
+    Edit8: TEdit;
+    Edit9: TEdit;
+    Edit10: TEdit;
+    Edit11: TEdit;
+    Edit12: TEdit;
+    Button2: TButton;
+    ApplicationEvents1: TApplicationEvents;
+    Label19: TLabel;
+    Farbe: TLabel;
+    ObjectName: TEdit;
+    ColorBox1: TColorBox;
+    PaintBox1: TPaintBox;
+    PaintBox2: TPaintBox;
+    PaintBox3: TPaintBox;
+    procedure Button1Click(Sender: TObject);
+    procedure RadioButton2Click(Sender: TObject);
+    procedure RadioButton1Click(Sender: TObject);
+    procedure Button2Click(Sender: TObject);
+    procedure FormActivate(Sender: TObject);
+    procedure ApplicationEvents1Message(var Msg: tagMSG;
+      var Handled: Boolean);
+    procedure FormCreate(Sender: TObject);
+    procedure PaintBox2Paint(Sender: TObject);
+    procedure PaintBox3Paint(Sender: TObject);
+    procedure FormDeactivate(Sender: TObject);
+  private
+    { Private declarations }
+  public
+    { Public declarations }
+  end;
+
+var
+  Form3: TForm3;
+
+implementation
+
+{$R *.dfm}
+
+uses
+  Main, GLTreeView, MathParser;
+
+procedure TForm3.Button1Click(Sender: TObject);
+var
+  Gerade: TGerade;
+  S1, S2, S3, S4, S5, S6: string;
+  Name, FullName: string;
+  Number: integer;
+begin
+ try
+  Name:=ObjectName.Text;
+  FullName:=Name;
+
+  Number:=Length(Name);
+  while Name[Number] in ['0'..'9'] do begin
+    Delete(Name, Number, 1);
+    dec(Number);
+  end;
+
+  If NameUsed(FullName) then begin
+    ShowMessage('Ein Objekt mit diesem Namen existiert bereits!');
+    Number:=1; FullName:=Name+IntToStr(Number);
+    while NameUsed(FullName) do begin
+      Number:=Number+1;
+      FullName:=Name+IntToStr(Number);
+    end;
+    ObjectName.Text:=FullName;
+    Exit;
+  end;
+
+   if Radiobutton1.Checked then begin
+     S1:=Edit1.Text; S2:=Edit2.Text; S3:=Edit3.Text;
+     S4:=Edit4.Text; S5:=Edit5.Text; S6:=Edit6.Text;
+     Form1.NewGerade(ProcessLine(S1, VarsArchive),ProcessLine(S2, VarsArchive),ProcessLine(S3, VarsArchive),
+                     ProcessLine(S4, VarsArchive),ProcessLine(S5, VarsArchive),ProcessLine(S6, VarsArchive));
+   end;
+   if Radiobutton2.Checked then begin
+     S1:=Edit7.Text; S2:=Edit8.Text; S3:=Edit9.Text;
+     S4:=Edit10.Text+'-'+S1; S5:=Edit11.Text+'-'+S2; S6:=Edit12.Text+'-'+S3;
+     Form1.NewGerade(ProcessLine(S1, VarsArchive),ProcessLine(S2, VarsArchive),ProcessLine(S3, VarsArchive),
+                     ProcessLine(S4, VarsArchive),ProcessLine(S5, VarsArchive),ProcessLine(S6, VarsArchive));
+   end;
+
+   Form1.TreeView1.Selected.Text:=FullName;
+   Gerade:=TGerade(TGLNode(Form1.TreeView1.Selected).LinkedObject);
+   Gerade.ObjectName:=FullName;
+   Gerade.ParamPosX1:=ProcessTriadLine(S1); Gerade.ParamPosX2:=ProcessTriadLine(S2);
+   Gerade.ParamPosX3:=ProcessTriadLine(S3); Gerade.ParamDirX1:=ProcessTriadLine(S4);
+   Gerade.ParamDirX2:=ProcessTriadLine(S5); Gerade.ParamDirX3:=ProcessTriadLine(S6);
+   Gerade.Material.FrontProperties.Diffuse.AsWinColor:=ColorBox1.Selected;
+
+   ZeigeDaten(Gerade, Form1.Memo1);
+   Form1.RegisterActions(Gerade, 'Create');
+   Form3.Hide;
+ except
+   MessageDlg('Fehlerhafte Eingabe! Überprüfen Sie, ob alle Zahlen korrekt eingegeben wurden.', mtError, [mbOk], 0);
+ end;
+end;
+
+procedure TForm3.RadioButton2Click(Sender: TObject);
+begin
+  Panel1.Visible:=False; Panel2.Visible:=True;
+  Edit7.SetFocus;
+end;
+
+procedure TForm3.RadioButton1Click(Sender: TObject);
+begin
+  Panel1.Visible:=True; Panel2.Visible:=False;
+  Edit1.SetFocus;
+end;
+
+procedure TForm3.Button2Click(Sender: TObject);
+begin
+  Close;
+end;
+
+procedure TForm3.FormActivate(Sender: TObject);
+var
+  Name, FullName: string;
+  Number: integer;
+begin
+  ColorBox1.Selected:=Random($F)*$100000+Random($F)*$1000+random($F)*$10;
+
+  Name:='g';
+  FullName:=Name;
+
+  Number:=1; FullName:=Name+IntToStr(Number);
+  while NameUsed(FullName) do begin
+    Number:=Number+1;
+    FullName:=Name+IntToStr(Number);
+  end;
+  ObjectName.Text:=FullName;
+
+  If Panel1.Visible then
+    Edit1.SetFocus;
+  If Panel2.Visible then
+    Edit7.SetFocus;
+
+  // Message Bearbeitung einschalten
+  ApplicationEvents1.OnMessage:= ApplicationEvents1Message;
+end;
+
+procedure TForm3.ApplicationEvents1Message(var Msg: tagMSG;
+  var Handled: Boolean);
+var
+  Control: TWinControl;
+  TabOrder: integer;
+  i, count: integer;
+  OK: Boolean;
+begin
+ if (Msg.Message = WM_KEYDOWN) then
+   case Msg.wParam of
+     VK_ESCAPE: begin
+       Handled:=True;
+       Close;
+     end;
+     VK_DOWN: begin
+       Control:= ActiveControl;
+       Count:= 0;
+       for i:=0 to Control.Parent.ControlCount - 1 do
+         If TwinControl(Control.Parent.Controls[i]).TabOrder > -1 then
+           inc(Count);
+
+       TabOrder:= Control.TabOrder;
+       i:=0; OK:= False;
+       while (i < Control.Parent.ControlCount) and not OK do begin
+         if TWinControl(Control.Parent.Controls[i]).TabOrder = (TabOrder + 1) mod Count then begin
+           Self.FocusControl(TWinControl(Control.Parent.Controls[i]));
+           OK:= True;
+         end;
+         inc(i);
+       end;
+     end;
+     VK_UP: begin
+       Control:= ActiveControl;
+       Count:= 0;
+       for i:=0 to Control.Parent.ControlCount - 1 do
+         If TwinControl(Control.Parent.Controls[i]).TabOrder > -1 then
+           inc(Count);
+
+       TabOrder:= Control.TabOrder;
+       i:=0; OK:= False;
+       while (i < Control.Parent.ControlCount) and not OK do begin
+         if TWinControl(Control.Parent.Controls[i]).TabOrder = (Count + TabOrder - 1) mod Count then begin
+           Self.FocusControl(TWinControl(Control.Parent.Controls[i]));
+           OK:= True;
+         end;
+         inc(i);
+       end;
+     end;
+   end;
+end;
+
+procedure TForm3.FormCreate(Sender: TObject);
+var
+  i: integer;
+begin
+  for i:=1 to high(GermanColors) do
+    ColorBox1.Items[i]:=GermanColors[i];
+  ColorBox1.Items[0]:='benutzerdefiniert...';
+end;
+
+procedure TForm3.PaintBox2Paint(Sender: TObject);
+begin
+  VerlaufDiagonalUp(TPaintBox(Sender).Canvas, clGreen, clMoneyGreen, TPaintBox(Sender).Width, TPaintBox(Sender).Height);
+end;
+
+procedure TForm3.PaintBox3Paint(Sender: TObject);
+begin
+  VerlaufDiagonalDown(TPaintBox(Sender).Canvas, clGreen, clMoneyGreen, TPaintBox(Sender).Width, TPaintBox(Sender).Height);
+end;
+
+procedure TForm3.FormDeactivate(Sender: TObject);
+begin
+  ApplicationEvents1.OnMessage:= nil;
+end;
+
+end.

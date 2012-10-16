@@ -1,0 +1,147 @@
+unit MultiButton;
+
+interface
+
+uses
+  Windows, SysUtils, Classes, Controls, ExtCtrls, Buttons, Messages, Graphics,
+  ComCtrls, ToolWin;
+
+const
+  ANIMSPEED = 15;
+  TIMER_TIME = 10;
+  TIMER_DELAY = 500;
+
+type
+  TAnimStatus = (Inactive, ScrollDown, ScrollUp);
+
+  TMultiButton = class(TToolBar)
+  private
+    FButtons: TList;
+
+    FDefaultButton: cardinal;
+
+    FAnimStatus: TAnimStatus;
+
+    FClickList: TList;
+
+    constructor Create(AOwner: TComponent); override;
+
+    procedure CMMouseEnter(var Msg: TMessage); message CM_MOUSEENTER;
+    procedure CMMouseLeave(var Msg: TMessage); message CM_MOUSELEAVE;
+
+    procedure TimerProc(var Msg: TMessage); message WM_TIMER;
+  protected
+    procedure Loaded; override;
+    procedure DoClick(Sender: TObject);
+  public
+  published
+    procedure SetDefaultButton(index: cardinal);
+
+    property DefaultButton: cardinal read FDefaultButton write SetDefaultButton;
+  end;
+
+procedure Register;
+
+implementation
+
+//==================================\\
+//========== TMultiButton ==========\\
+//==================================\\
+
+constructor TMultiButton.Create(AOwner: TComponent);
+begin
+  inherited Create(AOwner);
+
+  EdgeInner:= esNone;
+  EdgeOuter:= esNone;
+  Align:= alNone;
+  Flat:= True;
+
+  FClickList:= TList.Create;
+end;
+
+procedure TMultiButton.CMMouseEnter(var Msg: TMessage);
+begin
+//  Height:= FButtonHeight * FButtonCount;
+  FAnimStatus:= ScrollDown;
+  SetTimer(Handle, 1, TIMER_DELAY, nil);
+end;
+
+procedure TMultiButton.CMMouseLeave(var Msg: TMessage);
+begin
+//  Height:= FButtonHeight;
+  FAnimStatus:= ScrollUp;
+  SetTimer(Handle, 1, TIMER_TIME, nil);
+end;
+
+procedure TMultiButton.SetDefaultButton(index: cardinal);
+var
+  test: integer;
+begin
+  If (index > 0) and (index < ButtonCount) then begin
+    FDefaultButton:= index;
+
+    With TToolButton(Components[0]) do begin
+      OnClick:= TToolButton(Components[index]).OnClick;
+      ImageIndex:= TToolButton(Components[index]).ImageIndex;
+    end;
+  end;
+end;
+
+procedure TMultiButton.TimerProc(var Msg: TMessage);
+begin
+  KillTimer(Handle, Msg.WParam);
+  case FAnimStatus of
+    ScrollDown: If Height < (ButtonHeight * ButtonCount - ANIMSPEED) then begin
+                    Height:= Height + ANIMSPEED;
+                    SetTimer(Handle, 1, TIMER_TIME, nil);
+                end else begin
+                  FAnimStatus:= Inactive;
+                  Height:= ButtonHeight * ButtonCount;
+                end;
+    ScrollUp:   If Height > (ButtonHeight + ANIMSPEED) then begin
+                    Height:= Height - ANIMSPEED;
+                    SetTimer(Handle, 1, TIMER_TIME, nil);
+                end else begin
+                  FAnimStatus:= Inactive;
+                  Height:= ButtonHeight;
+                end;
+  end;
+end;
+
+procedure TMultiButton.Loaded;
+var
+  i: integer;
+begin
+  inherited;
+
+  FClickList.Clear;
+  FClickList.Add(nil);
+  for i:= 1 to ButtonCount - 1 do begin
+    FClickList.Add(@Buttons[i].OnClick);
+    Buttons[i].OnClick:= DoClick;
+  end;
+end;
+
+procedure TMultiButton.DoClick(Sender: TObject);
+var
+  FirstButton,
+  ThisButton: TToolButton;
+begin
+  ThisButton:= TToolButton(Sender);
+  If ThisButton.Index > 0 then begin
+    FirstButton:= Buttons[0];
+    @FirstButton.OnClick:= FClickList.Items[ThisButton.Index];
+    FirstButton.ImageIndex:= ThisButton.ImageIndex;
+
+    If Assigned(FirstButton.OnClick) then
+      FirstButton.OnClick(Sender);
+  end;
+end;
+
+procedure Register;
+begin
+  RegisterComponents('Standard', [TMultiButton]);
+end;
+
+end.

@@ -1,0 +1,153 @@
+﻿<Project xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <PropertyGroup>
+    <ProjectGuid>{d1522b42-723d-439b-8d9c-5d1ee92c1b28}</ProjectGuid>
+    <MainSource>Vectory.dpr</MainSource>
+    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
+    <DCC_DCCCompiler>DCC32</DCC_DCCCompiler>
+    <DCC_DependencyCheckOutputName>Vectory.exe</DCC_DependencyCheckOutputName>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
+    <Version>7.0</Version>
+    <DCC_DebugInformation>False</DCC_DebugInformation>
+    <DCC_LocalDebugSymbols>False</DCC_LocalDebugSymbols>
+    <DCC_SymbolReferenceInfo>0</DCC_SymbolReferenceInfo>
+    <DCC_Define>RELEASE</DCC_Define>
+    <DCC_UNSAFE_TYPE>True</DCC_UNSAFE_TYPE>
+    <DCC_UNSAFE_CODE>True</DCC_UNSAFE_CODE>
+    <DCC_UNSAFE_CAST>True</DCC_UNSAFE_CAST>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
+    <Version>7.0</Version>
+    <DCC_Define>DEBUG</DCC_Define>
+    <DCC_UNSAFE_TYPE>True</DCC_UNSAFE_TYPE>
+    <DCC_UNSAFE_CODE>True</DCC_UNSAFE_CODE>
+    <DCC_UNSAFE_CAST>True</DCC_UNSAFE_CAST>
+  </PropertyGroup>
+  <ProjectExtensions>
+    <Borland.Personality>Delphi.Personality</Borland.Personality>
+    <Borland.ProjectType>VCLApplication</Borland.ProjectType>
+    <BorlandProject>
+<BorlandProject><Delphi.Personality><Parameters><Parameters Name="RunParams">-acttest</Parameters><Parameters Name="HostApplication">C:\Test\plane\AnaGeo.exe</Parameters><Parameters Name="UseLauncher">False</Parameters><Parameters Name="LoadAllSymbols">True</Parameters><Parameters Name="LoadUnspecifiedSymbols">False</Parameters></Parameters><VersionInfo><VersionInfo Name="IncludeVerInfo">True</VersionInfo><VersionInfo Name="AutoIncBuild">False</VersionInfo><VersionInfo Name="MajorVer">1</VersionInfo><VersionInfo Name="MinorVer">0</VersionInfo><VersionInfo Name="Release">1</VersionInfo><VersionInfo Name="Build">0</VersionInfo><VersionInfo Name="Debug">False</VersionInfo><VersionInfo Name="PreRelease">False</VersionInfo><VersionInfo Name="Special">False</VersionInfo><VersionInfo Name="Private">False</VersionInfo><VersionInfo Name="DLL">False</VersionInfo><VersionInfo Name="Locale">1031</VersionInfo><VersionInfo Name="CodePage">1252</VersionInfo></VersionInfo><VersionInfoKeys><VersionInfoKeys Name="CompanyName">Elschad</VersionInfoKeys><VersionInfoKeys Name="FileDescription"></VersionInfoKeys><VersionInfoKeys Name="FileVersion">1.0.1.0</VersionInfoKeys><VersionInfoKeys Name="InternalName"></VersionInfoKeys><VersionInfoKeys Name="LegalCopyright"></VersionInfoKeys><VersionInfoKeys Name="LegalTrademarks"></VersionInfoKeys><VersionInfoKeys Name="OriginalFilename"></VersionInfoKeys><VersionInfoKeys Name="ProductName">Vectory</VersionInfoKeys><VersionInfoKeys Name="ProductVersion">1.0.1.0</VersionInfoKeys><VersionInfoKeys Name="Comments"></VersionInfoKeys></VersionInfoKeys><Source><Source Name="MainSource">Vectory.dpr</Source></Source></Delphi.Personality>  <ModelSupport>False</ModelSupport>
+</BorlandProject></BorlandProject>
+  </ProjectExtensions>
+  <Import Project="$(MSBuildBinPath)\Borland.Delphi.Targets" />
+  <ItemGroup>
+    <DelphiCompile Include="Vectory.dpr">
+      <MainSource>MainSource</MainSource>
+    </DelphiCompile>
+    <DCCReference Include="AbstandWinkel.pas" />
+    <DCCReference Include="ActionList.pas" />
+    <DCCReference Include="ActionTest.pas">
+      <Form>ActTest</Form>
+    </DCCReference>
+    <DCCReference Include="Constructions.pas" />
+    <DCCReference Include="DoppelKlickTool.pas">
+      <Form>Form6</Form>
+    </DCCReference>
+    <DCCReference Include="EbenenTool.pas">
+      <Form>Form2</Form>
+    </DCCReference>
+    <DCCReference Include="Einstellung.pas" />
+    <DCCReference Include="GeradenTool.pas">
+      <Form>Form3</Form>
+    </DCCReference>
+    <DCCReference Include="GLTreeView.pas" />
+    <DCCReference Include="GrafikOptions.pas">
+      <Form>Form7</Form>
+    </DCCReference>
+    <DCCReference Include="Info.pas">
+      <Form>InfoScreen</Form>
+    </DCCReference>
+    <DCCReference Include="Konstruktionen.pas" />
+    <DCCReference Include="KreisTool.pas">
+      <Form>KreisForm</Form>
+    </DCCReference>
+    <DCCReference Include="KugelTool.pas">
+      <Form>Form5</Form>
+    </DCCReference>
+    <DCCReference Include="Main.pas">
+      <Form>Form1</Form>
+    </DCCReference>
+    <DCCReference Include="MathParser.pas" />
+    <DCCReference Include="OrtsLinie.pas" />
+    <DCCReference Include="OrtsLinienTool.pas">
+      <Form>OrtsLinieTool</Form>
+    </DCCReference>
+    <DCCReference Include="ParameterTool.pas">
+      <Form>ParamTool</Form>
+    </DCCReference>
+    <DCCReference Include="Primitives.pas" />
+    <DCCReference Include="Profiles.pas" />
+    <DCCReference Include="PunkteTool.pas">
+      <Form>Form4</Form>
+    </DCCReference>
+    <DCCReference Include="Rueckblende.pas">
+      <Form>Form8</Form>
+    </DCCReference>
+    <DCCReference Include="SaveFileSettings.pas" />
+    <DCCReference Include="Splash.pas">
+      <Form>SplashScreen</Form>
+    </DCCReference>
+    <DCCReference Include="StreckenTool.pas">
+      <Form>Form9</Form>
+    </DCCReference>
+    <None Include="ModelSupport_Vectory\AbstandWinkel\default.txaPackage" />
+    <None Include="ModelSupport_Vectory\AbstandWinkel\default.txvpck" />
+    <None Include="ModelSupport_Vectory\ActionList\default.txaPackage" />
+    <None Include="ModelSupport_Vectory\ActionList\default.txvpck" />
+    <None Include="ModelSupport_Vectory\ActionTest\default.txaPackage" />
+    <None Include="ModelSupport_Vectory\ActionTest\default.txvpck" />
+    <None Include="ModelSupport_Vectory\Constructions\default.txaPackage" />
+    <None Include="ModelSupport_Vectory\Constructions\default.txvpck" />
+    <None Include="ModelSupport_Vectory\default.txaPackage" />
+    <None Include="ModelSupport_Vectory\default.txvpck" />
+    <None Include="ModelSupport_Vectory\DoppelKlickTool\default.txaPackage" />
+    <None Include="ModelSupport_Vectory\DoppelKlickTool\default.txvpck" />
+    <None Include="ModelSupport_Vectory\EbenenTool\default.txaPackage" />
+    <None Include="ModelSupport_Vectory\EbenenTool\default.txvpck" />
+    <None Include="ModelSupport_Vectory\Einstellung\default.txaPackage" />
+    <None Include="ModelSupport_Vectory\Einstellung\default.txvpck" />
+    <None Include="ModelSupport_Vectory\GeradenTool\default.txaPackage" />
+    <None Include="ModelSupport_Vectory\GeradenTool\default.txvpck" />
+    <None Include="ModelSupport_Vectory\GLTreeView\default.txaPackage" />
+    <None Include="ModelSupport_Vectory\GLTreeView\default.txvpck" />
+    <None Include="ModelSupport_Vectory\GrafikOptions\default.txaPackage" />
+    <None Include="ModelSupport_Vectory\GrafikOptions\default.txvpck" />
+    <None Include="ModelSupport_Vectory\Info\default.txaPackage" />
+    <None Include="ModelSupport_Vectory\Info\default.txvpck" />
+    <None Include="ModelSupport_Vectory\Konstruktionen\default.txaPackage" />
+    <None Include="ModelSupport_Vectory\Konstruktionen\default.txvpck" />
+    <None Include="ModelSupport_Vectory\KreisTool\default.txaPackage" />
+    <None Include="ModelSupport_Vectory\KreisTool\default.txvpck" />
+    <None Include="ModelSupport_Vectory\KugelTool\default.txaPackage" />
+    <None Include="ModelSupport_Vectory\KugelTool\default.txvpck" />
+    <None Include="ModelSupport_Vectory\Main\default.txaPackage" />
+    <None Include="ModelSupport_Vectory\Main\default.txvpck" />
+    <None Include="ModelSupport_Vectory\MathParser\default.txaPackage" />
+    <None Include="ModelSupport_Vectory\MathParser\default.txvpck" />
+    <None Include="ModelSupport_Vectory\OrtsLinienTool\default.txaPackage" />
+    <None Include="ModelSupport_Vectory\OrtsLinienTool\default.txvpck" />
+    <None Include="ModelSupport_Vectory\OrtsLinie\default.txaPackage" />
+    <None Include="ModelSupport_Vectory\OrtsLinie\default.txvpck" />
+    <None Include="ModelSupport_Vectory\ParameterTool\default.txaPackage" />
+    <None Include="ModelSupport_Vectory\ParameterTool\default.txvpck" />
+    <None Include="ModelSupport_Vectory\Primitives\default.txaPackage" />
+    <None Include="ModelSupport_Vectory\Primitives\default.txvpck" />
+    <None Include="ModelSupport_Vectory\Profiles\default.txaPackage" />
+    <None Include="ModelSupport_Vectory\Profiles\default.txvpck" />
+    <None Include="ModelSupport_Vectory\PunkteTool\default.txaPackage" />
+    <None Include="ModelSupport_Vectory\PunkteTool\default.txvpck" />
+    <None Include="ModelSupport_Vectory\Rueckblende\default.txaPackage" />
+    <None Include="ModelSupport_Vectory\Rueckblende\default.txvpck" />
+    <None Include="ModelSupport_Vectory\SaveFileSettings\default.txaPackage" />
+    <None Include="ModelSupport_Vectory\SaveFileSettings\default.txvpck" />
+    <None Include="ModelSupport_Vectory\Splash\default.txaPackage" />
+    <None Include="ModelSupport_Vectory\Splash\default.txvpck" />
+    <None Include="ModelSupport_Vectory\StreckenTool\default.txaPackage" />
+    <None Include="ModelSupport_Vectory\StreckenTool\default.txvpck" />
+    <None Include="ModelSupport_Vectory\Vectory\default.txaPackage" />
+    <None Include="ModelSupport_Vectory\Vectory\default.txvpck" />
+    <None Include="Vectory.todo" />
+  </ItemGroup>
+</Project>

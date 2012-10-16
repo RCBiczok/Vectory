@@ -1,0 +1,463 @@
+unit AbstandWinkel;
+
+interface
+
+uses
+  Main, Geometry, Math, SchnittBerechnung;
+
+// Winkel
+function Winkel2Ebenen(Ebene1, Ebene2: TEbene): single;
+function Winkel2Geraden(Gerade1, Gerade2: TGerade): single;
+function WinkelGeradeEbene(Gerade: TGerade; Ebene: TEbene): single;
+
+//Abstand
+function Abstand2Punkte(Punkt1, Punkt2: TPunkt): single;
+function AbstandPunktGerade(Punkt: TPunkt; Gerade: TGerade):single;
+function Abstand2Geraden(Gerade1, Gerade2: TGerade):single;
+function AbstandEbeneGerade(Ebene: TEbene; Gerade: TGerade):single;
+function AbstandEbenePunkt(Ebene: TEbene; Punkt: TPunkt):single;
+function Abstand2Ebenen(Ebene1, Ebene2: TEbene):single;
+function AbstandPunktStrecke(Punkt: TPunkt; Strecke: TStrecke): single;
+function AbstandStreckeGerade(Strecke: TStrecke; Gerade: TGerade): single;
+function AbstandStreckeEbene(Strecke: TStrecke; Ebene: TEbene): single;
+function Abstand2Strecken(Strecke1, Strecke2: TStrecke): single;
+function AbstandPunktKugel(Punkt: TPunkt; Kugel: TKugel): single;
+function AbstandStreckeKugel(Strecke: TStrecke; Kugel: TKugel): single;
+function AbstandGeradeKugel(Gerade: TGerade; Kugel: TKugel): single;
+function AbstandEbeneKugel(Ebene: TEbene; Kugel: TKugel): single;
+function Abstand2Kugeln(Kugel1, Kugel2: TKugel): single;
+function AbstandPunktKreis(Punkt: TPunkt; Kreis: TKreis): single;
+function AbstandGeradeKreis(Gerade: TGerade; Kreis: TKreis): single;
+function AbstandStreckeKreis(Strecke: TStrecke; Kreis: TKreis): single;
+
+implementation
+
+function Winkel2Ebenen(Ebene1, Ebene2: TEbene): single;
+var
+  v1, v2: TAffineVector;
+begin
+  SetVector(v1,Ebene1.Direction.AsAffineVector);
+  SetVector(v2,Ebene2.Direction.AsAffineVector);
+  Result:=VectorAngleCosine(v1, v2);
+  Result:=Abs(RadToDeg(ArcCos(Result)));
+  If abs(Result) > 90 then
+    Result:=180-Result;
+
+  // der Winkel sollte immer positiv sein
+  Result:= abs(Result);
+end;
+
+function Winkel2Geraden(Gerade1, Gerade2: TGerade): single;
+var
+  v1, v2: TAffineVector;
+  Objects: TSchnittObjekte;
+begin
+  Result:=-1;
+
+  // erst feststellen, ob die Geraden sich schneiden
+  SetLength(Objects, 2);
+  Objects[0]:=Gerade1;
+  Objects[1]:=Gerade2;
+  If ErmittleSchnittmenge(Objects)=NIL then
+    Exit;
+
+  // dann Winkel berechnen
+  SetVector(v1, Gerade1.Up.AsAffineVector);
+  SetVector(v2, Gerade2.Up.AsAffineVector);
+  Result:=VectorAngleCosine(v1, v2);
+  Result:=RadToDeg(ArcCos(Result));
+  // der Winkel sollte immer positiv sein
+  Result:= abs(Result);
+  // Es soll immer der kleinere Winkel bestimmt werden
+  If Result > 90 then
+    Result:= 180 -Result;
+end;
+
+function WinkelGeradeEbene(Gerade: TGerade; Ebene: TEbene): single;
+var
+  v1, v2: TAffineVector;
+begin
+  SetVector(v1,Ebene.Direction.AsAffineVector);
+  SetVector(v2,Gerade.Up.AsAffineVector);
+  Result:=VectorAngleCosine(v1, v2);
+  Result:=90-RadToDeg(ArcCos(Result));
+
+  // der Winkel sollte immer positiv sein
+  Result:= abs(Result);
+end;
+
+//===== Abstand =====\\
+
+function Abstand2Punkte(Punkt1, Punkt2: TPunkt): single;
+var
+  v1, v2: TAffineVector;
+begin
+  //  Vektor aus den zwei Punkten erstellen, dann Länge bestimmen
+
+  SetVector(v1, Punkt1.Position.AsAffineVector);
+  SetVector(v2, Punkt2.Position.AsAffineVector);
+  Result:=VectorLength(VectorSubtract(v2, v1));
+end;
+
+function AbstandPunktGerade(Punkt: TPunkt; Gerade: TGerade):single;
+var
+  v1, v2: TAffineVector;
+begin
+  //  Die Skalarprodukt-Methode(ohne Gleichung, ohne Trigonometrie)
+  SetVector(v1, VectorSubtract(Punkt.Position.AsAffineVector, Gerade.Position.AsAffineVector));
+  SetVector(v2, Gerade.Up.AsAffineVector);
+//  ScaleVector(v2, VectorDotProduct(v1, v2)/VectorDotProduct(v2, v2));  // (v1 o v2)/(|v2|^2)
+//  Result:=VectorLength(VectorSubtract(v1, v2));
+  Result:=VectorLength(VectorCrossProduct(v1,v2))/VectorLength(v2);
+end;
+
+function AbstandPunktStrecke(Punkt: TPunkt; Strecke: TStrecke): single;
+var
+  L1, L2, L3: single;
+  V1, V2, P1, P2: TAffineVector;
+begin
+  L1:= AbstandPunktGerade(Punkt, TGerade(Strecke));
+  P1:= VectorAdd(Strecke.Position.AsAffineVector, VectorScale(Strecke.Up.AsAffineVector, -Strecke.Height/2));
+  P2:= VectorAdd(Strecke.Position.AsAffineVector, VectorScale(Strecke.Up.AsAffineVector, Strecke.Height/2));
+  V1:= VectorSubtract(Punkt.Position.AsAffineVector, P1);
+  V2:= VectorSubtract(Punkt.Position.AsAffineVector, P2);
+  L2:= VectorDotProduct(V1, V2)/VectorLength(V1);
+  If L2 > L1 then begin
+    L2:= VectorLength(V1);
+    L3:= VectorLength(V2);
+    If L2 > L3 then
+      Result:= L3
+    else
+      Result:= L2;
+  end else begin
+    Result:= L1;
+  end;
+end;
+
+function Abstand2Geraden(Gerade1, Gerade2: TGerade):single;
+var
+  v1, v2, v3: TAffineVector;
+begin
+  //  Die Vektorprodukt-Skalarprodukt-Methode
+  SetVector(v1, Gerade1.Up.AsAffineVector);
+  SetVector(v2, Gerade2.Up.AsAffineVector);
+  SetVector(v3, VectorSubtract(Gerade2.Position.AsAffineVector, Gerade1.Position.AsAffineVector));
+  SetVector(v1, VectorCrossProduct(v1, v2));
+  If VectorLength(v1) = 0  then
+    Result:=VectorLength(VectorCrossProduct(v2,v3))/VectorLength(v2)
+  else
+    Result:=abs(VectorDotProduct(v1,v3)/VectorLength(v1));
+end;
+
+function AbstandEbenePunkt(Ebene: TEbene; Punkt: TPunkt):single;
+var
+  v1, v2: TAffineVector;
+begin
+  SetVector(v1, VectorSubtract(Ebene.Position.AsAffineVector, Punkt.Position.AsAffineVector));
+  SetVector(v2, Ebene.Direction.AsAffineVector);
+  ScaleVector(v2, VectorDotProduct(v1, v2)/VectorDotProduct(v2, v2));
+  Result:= VectorLength(v2);
+end;
+
+function AbstandEbeneGerade(Ebene: TEbene; Gerade: TGerade):single;
+var
+  v1, v2: TAffineVector;
+begin
+  Result:=0;
+  // wenn Gerade parallel genügt es nur den Abstand zu dem Aufpunkt der Geraden zu berechnen
+  If IsZero(VectorDotProduct(Ebene.Direction.AsAffineVector, Gerade.Up.AsAffineVector), 0.0000001) then begin
+    SetVector(v1, VectorSubtract(Ebene.Position.AsAffineVector, Gerade.Position.AsAffineVector));
+    SetVector(v2, Ebene.Direction.AsAffineVector);
+    ScaleVector(v2, VectorDotProduct(v1, v2)/VectorDotProduct(v2, v2));
+    Result:= VectorLength(v2);
+  end;
+end;
+
+function Abstand2Ebenen(Ebene1, Ebene2: TEbene):single;
+var
+  v1, v2: TAffineVector;
+begin
+  Result:=0;
+  If IsZero(VectorDotProduct(Ebene1.Direction.AsAffineVector, Ebene2.Direction.AsAffineVector), 0.0000001) then begin
+    SetVector(v1, VectorSubtract(Ebene1.Position.AsAffineVector, Ebene2.Position.AsAffineVector));
+    SetVector(v2, Ebene1.Direction.AsAffineVector);
+    ScaleVector(v2, VectorDotProduct(v1, v2)/VectorDotProduct(v2, v2));
+    Result:= VectorLength(v2);
+  end;
+end;
+
+function AbstandStreckeGerade(Strecke: TStrecke; Gerade: TGerade): single;
+var
+  X, P, P1, P2, n, m, a, b, u, v: TAffineVector;
+  l, l1, l2: single;
+begin
+  P1:= VectorAdd(Strecke.Position.AsAffineVector, VectorScale(Strecke.Up.AsAffineVector, -Strecke.Height/2));
+  P2:= VectorAdd(Strecke.Position.AsAffineVector, VectorScale(Strecke.Up.AsAffineVector, Strecke.Height/2));
+
+  P:= Gerade.Position.AsAffineVector;
+  a:= VectorSubtract(P1, P);
+  b:= VectorSubtract(P2, P);
+
+  u:= Strecke.Up.AsAffineVector; v:= Gerade.Up.AsAffineVector;
+  n:= VectorCrossProduct(u, v);
+
+  If VectorLength(n) > 0 then begin
+    // windschief oder schneiden sich
+    m:= VectorCrossProduct(n, u);
+
+    NormalizeVector(n);
+    ScaleVector(n, VectorDotProduct(a, n));
+    AddVector(P, n);
+    X:= VectorSubtract(P1, P);
+
+    ScaleVector(v, VectorDotProduct(m, X)/VectorDotProduct(m, v));
+
+    X:= VectorAdd(P, v);
+
+    u:= VectorSubtract(P1, X); m:= VectorSubtract(P2, X);
+    l:= VectorLength(u) + VectorLength(m);
+    u:= VectorSubtract(P2, P1);
+    If IsZero(VectorLength(u) - l, 0.000001) then
+    // Punkt auf der Strecke
+      Result:= VectorLength(n)
+    else begin
+    // Punkt ausserhalb der Strecke
+      v:= Gerade.Up.AsAffineVector;
+      a:= VectorCrossProduct(a, v);
+      b:= VectorCrossProduct(b, v);
+      l1:= VectorLength(a);
+      l2:= VectorLength(b);
+      If l1 < l2 then
+        Result:= l1
+      else
+        Result:= l2;
+    end;
+
+  end else begin
+    // parallel
+    Result:= abs(VectorLength(VectorCrossProduct(a, u))/VectorLength(u));
+  end;
+end;
+
+function Abstand2Strecken(Strecke1, Strecke2: TStrecke): single;
+var
+  d1, d2, d3, d4: single;
+  P1, P2: TAffineVector;
+  Pos1, Pos2: TAffineVector;
+begin
+  d1:= AbstandStreckeGerade(Strecke1, TGerade(Strecke2));
+  d2:= AbstandStreckeGerade(Strecke2, TGerade(Strecke1));
+  d3:= Abstand2Geraden(TGerade(Strecke1), TGerade(Strecke2));
+  If SameValue(d1, d2, 0.000001) then
+    // Strecken übereinander
+    Result:= d1
+  else begin
+//    If SameValue(d1, d3, 0.000001) then begin
+      // Strecke1 unter/über Gerade2
+      P1:= VectorAdd(Strecke2.Position.AsAffineVector, VectorScale(Strecke2.Up.AsAffineVector, -Strecke2.Height/2));
+      P2:= VectorAdd(Strecke2.Position.AsAffineVector, VectorScale(Strecke2.Up.AsAffineVector, Strecke2.Height/2));
+
+      Pos1:= Strecke2.Position.AsAffineVector;
+
+      Strecke2.Position.AsAffineVector:= P1;
+      d1:= AbstandPunktStrecke(TPunkt(Strecke2), Strecke1);
+
+      Strecke2.Position.AsAffineVector:= P2;
+      d2:= AbstandPunktStrecke(TPunkt(Strecke2), Strecke1);
+
+      Strecke2.Position.AsAffineVector:= Pos1;
+
+      If d1 < d2 then
+        Result:= d1
+      else
+        Result:= d2;
+      If d1 < d2 then
+        Result:= d1
+      else
+        Result:= d2;
+//    end else begin
+      // Strecke2 unter/über Gerade1 oder
+      // Keine der Strecken über/unter der Geraden der anderen Strecke
+
+      P1:= VectorAdd(Strecke1.Position.AsAffineVector, VectorScale(Strecke1.Up.AsAffineVector, -Strecke1.Height/2));
+      P2:= VectorAdd(Strecke1.Position.AsAffineVector, VectorScale(Strecke1.Up.AsAffineVector, Strecke1.Height/2));
+
+      Pos1:= Strecke1.Position.AsAffineVector;
+
+      Strecke1.Position.AsAffineVector:= P1;
+      d3:= AbstandPunktStrecke(TPunkt(Strecke1), Strecke2);
+
+      Strecke1.Position.AsAffineVector:= P2;
+      d4:= AbstandPunktStrecke(TPunkt(Strecke1), Strecke2);
+
+      Strecke1.Position.AsAffineVector:= Pos1;
+
+      Result:= d1;
+      If d2 < Result then Result:= d2;
+      If d3 < Result then Result:= d3;
+      If d4 < Result then Result:= d4;
+
+//    end;
+  end;
+end;
+
+function AbstandStreckeEbene(Strecke: TStrecke; Ebene: TEbene): single;
+var
+  P1, P2, v1, v2, n: TAffineVector;
+  d1, d2: single;
+begin
+  If VectorEquals(Strecke.AnfangsPunkt, Strecke.EndPunkt) then begin
+    P1:= VectorAdd(Strecke.Position.AsAffineVector, VectorScale(Strecke.Up.AsAffineVector, -Strecke.Height));
+    P1:= VectorAdd(Strecke.Position.AsAffineVector, VectorScale(Strecke.Up.AsAffineVector, Strecke.Height));
+  end else begin
+    P1:= AffineVectorMake(Strecke.AnfangsPunkt[1],
+                    Strecke.AnfangsPunkt[2],
+                    Strecke.AnfangsPunkt[0]);
+    P2:= AffineVectorMake(Strecke.EndPunkt[1],
+                    Strecke.EndPunkt[2],
+                    Strecke.EndPunkt[0]);
+  end;
+
+  v1:= VectorSubtract(P1, Ebene.Position.AsAffineVector);
+  v2:= VectorSubtract(P2, Ebene.Position.AsAffineVector);
+  n:= Ebene.Direction.AsAffineVector;
+  If VectorDotProduct(v1, v2) <= 0.000001 then
+    Result:= 0
+  else begin
+    ScaleVector(n, VectorDotProduct(v1, n)/VectorDotProduct(n, n));
+    d1:= VectorLength(n);
+    ScaleVector(n, VectorDotProduct(v2, n)/VectorDotProduct(n, n));
+    d2:= VectorLength(n);
+    If d1 < d2 then Result:= d1 else Result:= d2;
+  end;
+end;
+
+function AbstandPunktKugel(Punkt: TPunkt; Kugel: TKugel): single;
+begin
+  Result:= Abstand2Punkte(Punkt, TPunkt(Kugel)) - Kugel.Radius;
+end;
+
+function AbstandStreckeKugel(Strecke: TStrecke; Kugel: TKugel): single;
+begin
+  Result:= AbstandPunktStrecke(TPunkt(Kugel), Strecke) - Kugel.Radius;
+end;
+
+function AbstandGeradeKugel(Gerade: TGerade; Kugel: TKugel): single;
+begin
+  Result:= AbstandPunktGerade(TPunkt(Kugel), Gerade) - Kugel.Radius;
+end;
+
+function AbstandEbeneKugel(Ebene: TEbene; Kugel: TKugel): single;
+begin
+  Result:= AbstandEbenePunkt(Ebene, TPunkt(Kugel)) - Kugel.Radius;
+end;
+
+function Abstand2Kugeln(Kugel1, Kugel2: TKugel): single;
+begin
+  Result:= Abstand2Punkte(TPunkt(Kugel1), TPunkt(Kugel2)) - Kugel1.Radius - Kugel2.Radius;
+end;
+
+function AbstandPunktKreis(Punkt: TPunkt; Kreis: TKreis): single;
+var
+  d: single;
+  a, b, c, c2, n: TAffineVector;
+begin
+  a:= VectorSubtract(Kreis.Position.AsAffineVector, Punkt.Position.AsAffineVector);
+  n:= Kreis.Direction.AsAffineVector;
+  b:= VectorScale(n, VectorDotProduct(n, a)/VectorDotProduct(n, n));
+  c:= VectorSubtract(a, b);
+  If IsZero(VectorLength(c), 0.000001) then begin
+    Result:= Sqrt(Sqr(Kreis.MajorRadius) + VectorDotProduct(b, b));
+  end else begin
+    c2:= VectorScale(c, 1- Kreis.MajorRadius / VectorLength(c));
+    Result:= VectorLength(VectorAdd(b, c2));
+  end;
+end;
+
+function AbstandGeradeKreis(Gerade: TGerade; Kreis: TKreis): single;
+var
+  X, P1, P2, a, v, n: TAffineVector;
+  b: single;
+begin
+  SetVector(P1, Gerade.Position.AsAffineVector);
+  SetVector(P2, Kreis.Position.AsAffineVector);
+  SetVector(v, Gerade.Up.AsAffineVector);
+  SetVector(n, Kreis.Direction.AsAffineVector);
+  SetVector(a, VectorSubtract(P2, P1));
+  SetVector(X, VectorCombine(P1, v, 1, VectorDotProduct(a, v)/VectorDotProduct(v, v)));
+  SetVector(X, VectorSubtract(X, P2));
+
+    b:= Kreis.MajorRadius * VectorLength(VectorCrossProduct(n, v))/VectorLength(n)/VectorLength(v);
+
+  Result:= abs(VectorLength(X) - b);
+  If Result > abs(VectorLength(X) + b) then
+    Result:= abs(VectorLength(X) + b);
+end;
+
+function AbstandStreckeKreis(Strecke: TStrecke; Kreis: TKreis): single;
+var
+  X, X1, X2, Xd, P1, P2, a, v, n: TAffineVector;
+  a1, a2, b1, b2, c1, c2: TAffineVector;
+  b, bd, d1, d2: single;
+  OK: Boolean;
+begin
+  SetVector(P1, Strecke.Position.AsAffineVector);
+  SetVector(P2, Kreis.Position.AsAffineVector);
+  SetVector(v, Strecke.Up.AsAffineVector);
+  SetVector(n, Kreis.Direction.AsAffineVector);
+  SetVector(a, VectorSubtract(P2, P1));
+  SetVector(X, VectorCombine(P1, v, 1, VectorDotProduct(a, v)/VectorDotProduct(v, v)));
+  SetVector(Xd, VectorSubtract(X, P2));
+  bd:= Kreis.MajorRadius * Sqrt(1-Sqr(VectorAngleCosine(n, v)));
+  If bd = Kreis.MajorRadius then bd:= 0;
+  SetVector(X, VectorCombine(X, v, 1, bd));
+  SetVector(Xd, VectorCombine(X, v, 1, -2*bd));
+
+  OK:= False;
+
+  SetVector(X1, VectorAdd(Strecke.Position.AsAffineVector, VectorScale(v, Strecke.Height/2)));
+  SetVector(X2, VectorAdd(Strecke.Position.AsAffineVector, VectorScale(v, -Strecke.Height/2)));
+  SetVector(X1, VectorSubtract(X1, X));
+  SetVector(X2, VectorSubtract(X2, X));
+  If IsZero(VectorLength(X1) + VectorLength(X2) - Strecke.Height, 0.000001) then
+    OK:= True;
+
+  SetVector(X1, VectorAdd(X1, VectorSubtract(X, Xd)));
+  SetVector(X2, VectorAdd(X2, VectorSubtract(X, Xd)));
+  If IsZero(VectorLength(X1) + VectorLength(X2) - Strecke.Height, 0.000001) then
+    OK:= True;
+
+  If OK then begin
+    SetVector(X, VectorSubtract(P2, X));
+    b:= Kreis.MajorRadius * VectorLength(VectorCrossProduct(n, v))/VectorLength(n)/VectorLength(v);
+
+    Result:= abs(VectorLength(X) - b);
+    If Result > abs(VectorLength(X) + b) then
+      Result:= abs(VectorLength(X) + b);
+  end else begin
+    AddVector(X1, X);
+    AddVector(X2, X);
+    a1:= VectorSubtract(P2, X1);
+    a2:= VectorSubtract(P2, X1);
+    b1:= VectorScale(n, VectorDotProduct(n, a1)/VectorDotProduct(n, n));
+    b2:= VectorScale(n, VectorDotProduct(n, a2)/VectorDotProduct(n, n));
+    c1:= VectorSubtract(a1, b1);
+    c2:= VectorSubtract(a2, b2);
+    If IsZero(VectorLength(c1), 0.000001) then begin
+      d1:= Sqrt(Sqr(Kreis.MajorRadius) + VectorDotProduct(b1, b1));
+    end else begin
+      c1:= VectorScale(c1, 1- Kreis.MajorRadius / VectorLength(c1));
+      d1:= VectorLength(VectorAdd(b1, c1));
+    end;
+    If IsZero(VectorLength(c2), 0.000001) then begin
+      d2:= Sqrt(Sqr(Kreis.MajorRadius) + VectorDotProduct(b2, b2));
+    end else begin
+      c2:= VectorScale(c2, 1- Kreis.MajorRadius / VectorLength(c2));
+      d2:= VectorLength(VectorAdd(b2, c2));
+    end;
+
+    If d1 < d2 then Result:= d1 else Result:= d2;
+  end;
+end;
+
+end.
